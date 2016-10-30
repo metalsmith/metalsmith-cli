@@ -1,0 +1,56 @@
+{
+  "name": "metalsmith-cli",
+  "version": "0.0.1",
+  "description": "CLI for Metalsmith — An extremely simple, pluggable static site generator.",
+  "bin": {
+    "metalsmith": "bin/metalsmith",
+    "_metalsmith": "bin/_metalsmith"
+  },
+  "scripts": {
+    "pretest": "npm install",
+    "test": "mocha $HARMONY_OPTS",
+    "pretest-debug": "npm install",
+    "test-debug": "mocha debug",
+    "precoverage": "npm install",
+    "coverage": "node $HARMONY_OPTS ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha",
+    "precoveralls": "npm run coverage",
+    "coveralls": "coveralls < coverage/lcov.info"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metalsmith/metalsmith-cli.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/metalsmith/metalsmith-cli/issues"
+  },
+  "homepage": "http://metalsmith.io",
+  "keywords": [
+    "static",
+    "file",
+    "site",
+    "website",
+    "blog",
+    "generator",
+    "markdown",
+    "jekyll",
+    "wintersmith",
+    "blacksmith"
+  ],
+  "devDependencies": {
+    "assert-dir-equal": "^1.0.1",
+    "coveralls": "^2.11.14",
+    "istanbul": "^0.4.5",
+    "metalsmith-drafts": "0.0.1",
+    "metalsmith-markdown": "^0.2.1",
+    "mocha": "^3.1.2"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "commander": "^2.9.0",
+    "has-generators": "^1.0.1",
+    "metalsmith": "^2.3.0",
+    "win-fork": "^1.1.1"
+  }
+}
