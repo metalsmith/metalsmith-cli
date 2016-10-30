@@ -1,6 +1,3 @@
-/* eslint-env mocha */
-/* eslint no-var:0, no-bitwise:0, prefer-arrow-callback:0, prefer-template:0, func-names: 0, space-before-function-paren:0, space-before-blocks:0 */
-
 var assert = require('assert');
 var equal = require('assert-dir-equal');
 var exec = require('child_process').exec;
