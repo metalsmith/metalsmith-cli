@@ -19,7 +19,8 @@
     "coverage": "node $HARMONY_OPTS ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --compilers js:babel-register",
     "precoveralls": "npm run coverage",
     "coveralls": "coveralls < coverage/lcov.info",
-    "postinstall": "npm run build"
+    "prepublish": "npm run build",
+    "preinstall": "npm run build"
   },
   "repository": {
     "type": "git",
