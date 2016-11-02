@@ -20,7 +20,7 @@
     "precoveralls": "npm run coverage",
     "coveralls": "coveralls < coverage/lcov.info",
     "prepublish": "npm run build",
-    "preinstall": "npm run build"
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
