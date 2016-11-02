@@ -1,14 +1,81 @@
 #!/usr/bin/env node
 
+
 /**
  * Dependencies.
  */
 
-var chalk = require('chalk');
-var exists = require('fs').existsSync;
-var Metalsmith = require('metalsmith');
-var program = require('commander');
-var resolve = require('path').resolve;
+const chalk = require('chalk');
+const { existsSync: exists, readFileSync: readFile } = require('fs');
+const Metalsmith = require('metalsmith');
+const program = require('commander');
+const resolve = require('path').resolve;
+
+
+/**
+ * Reads and parses a JSON file
+ *
+ * @param   {String} path
+ *
+ * @returns {Object}
+ */
+const jsonFile = path => JSON.parse(readFile(path, 'utf8'));
+
+/**
+ * Log an error and then exit the process.
+ *
+ * @param   {String} msg
+ * @param   {String} stack  [optional] stack trace to print
+ *
+ * @returns {Void}
+ */
+const fatal = (msg, stack) => {
+  console.error();
+  console.error(chalk.red('  Metalsmith') + chalk.gray(' · ') + msg);
+  if (stack) {
+    console.error();
+    console.error(chalk.gray(stack));
+  }
+  console.error();
+  process.exit(1);
+};
+
+/**
+ * Log a message
+ *
+ * @param   {String} message
+ *
+ * @returns {Void}
+ */
+const log = (message) => {
+  console.log();
+  console.log(chalk.gray('  Metalsmith · ') + message);
+  console.log();
+};
+
+/**
+ * Normalize an `obj` of plugins.
+ * Converts an object to an array of plugins
+ *
+ * @param {Mixed} obj Array or Object
+ *
+ * @returns {Array}
+ */
+const normalize = (obj) => {
+  if (obj instanceof Array) {
+    return obj;
+  }
+  else if (!obj) {
+    return [];
+  }
+
+  return Object.keys(obj).map((key) => {
+    const plugin = {};
+    plugin[key] = obj[key];
+    return plugin;
+  });
+};
+
 
 /**
  * Usage.
@@ -22,7 +89,8 @@ program
  * Examples.
  */
 
-program.on('--help', function(){
+program.on('--help', () => {
+  /* eslint no-console:0 */
   console.log('  Examples:');
   console.log();
   console.log('    # build from metalsmith.json:');
@@ -43,22 +111,26 @@ program.parse(process.argv);
  * Config.
  */
 
-var dir = process.cwd();
-var config = program.config;
-var path = resolve(dir, config);
-if (!exists(path)) fatal('could not find a ' + config + ' configuration file.');
+const dir = process.cwd();
+const config = program.config;
+const path = resolve(dir, config);
+if (!exists(path)) {
+  fatal(`could not find a ${config} configuration file.`);
+}
 
+let json;
 try {
-  var json = require(path);
-} catch (e) {
-  fatal('it seems like ' + config + ' is malformed.');
+  json = jsonFile(path);
+}
+catch (e) {
+  fatal(`it seems like ${config} is malformed.`);
 }
 
 /**
  * Metalsmith.
  */
 
-var metalsmith = new Metalsmith(dir);
+const metalsmith = new Metalsmith(dir);
 if (json.source) metalsmith.source(json.source);
 if (json.destination) metalsmith.destination(json.destination);
 if (json.concurrency) metalsmith.concurrency(json.concurrency);
@@ -71,89 +143,46 @@ if (json.ignore != null) metalsmith.ignore(json.ignore);
  * Plugins.
  */
 
-normalize(json.plugins).forEach(function(plugin){
-  for (var name in plugin) {
-    var opts = plugin[name];
-    var mod;
+normalize(json.plugins).forEach((plugin) => {
+  Object.keys(plugin).forEach((name) => {
+    /* eslint import/no-dynamic-require:0, global-require: 0 */
+    const opts = plugin[name];
+    let mod;
 
     try {
-      var local = resolve(dir, name);
-      var npm = resolve(dir, 'node_modules', name);
+      const local = resolve(dir, name);
+      const npm = resolve(dir, 'node_modules', name);
 
-      if (exists(local) || exists(local + '.js')) {
+      if (exists(local) || exists(`${local}.js`)) {
         mod = require(local);
-      } else if (exists(npm)) {
+      }
+      else if (exists(npm)) {
         mod = require(npm);
-      } else {
+      }
+      else {
         mod = require(name);
       }
-    } catch (e) {
-      fatal('failed to require plugin "' + name + '".');
+    }
+    catch (e) {
+      fatal(`failed to require plugin "${name}".`);
     }
 
     try {
       metalsmith.use(mod(opts));
-    } catch (e) {
-      fatal('error using plugin "' + name + '"...', e.message + '\n\n' + e.stack);
     }
-  }
+    catch (e) {
+      fatal(`error using plugin "${name}"...`, `${e.message}\n\n${e.stack}`);
+    }
+  });
 });
 
 /**
  * Build.
  */
 
-metalsmith.build(function(err){
-  if (err) return fatal(err.message, err.stack);
-  log('successfully built to ' + metalsmith.destination());
+metalsmith.build((err) => {
+  if (err) {
+    return fatal(err.message, err.stack);
+  }
+  return log(`successfully built to ${metalsmith.destination()}`);
 });
-
-/**
- * Log an error and then exit the process.
- *
- * @param {String} msg
- * @param {String} [stack]  Optional stack trace to print.
- */
-
-function fatal(msg, stack){
-  console.error();
-  console.error(chalk.red('  Metalsmith') + chalk.gray(' · ') + msg);
-  if (stack) {
-    console.error();
-    console.error(chalk.gray(stack));
-  }
-  console.error();
-  process.exit(1);
-}
-
-/**
- * Log a `message`.
- *
- * @param {String} message
- */
-
-function log(message){
-  console.log();
-  console.log(chalk.gray('  Metalsmith · ') + message);
-  console.log();
-}
-
-/**
- * Normalize an `obj` of plugins.
- *
- * @param {Array or Object} obj
- * @return {Array}
- */
-
-function normalize(obj){
-  if (obj instanceof Array) return obj;
-  var ret = [];
-
-  for (var key in obj) {
-    var plugin = {};
-    plugin[key] = obj[key];
-    ret.push(plugin);
-  }
-
-  return ret;
-}

@@ -3,6 +3,6 @@
  * Plugin.
  */
 
-module.exports = function(){
-  return function(){};
+module.exports = function emptyPluginOptions () {
+  return function emptyPlugin () {};
 };
