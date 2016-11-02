@@ -7,8 +7,6 @@
     "_metalsmith": "bin/_metalsmith"
   },
   "scripts": {
-    "prebuild": "npm install --silent --progress=false",
-    "builds": "mkdir -p bin",
     "build": "npm run build:cli",
     "build:cli": "babel src/_metalsmith --out-file bin/_metalsmith",
     "postbuild:cli": "babel src/metalsmith --out-file bin/metalsmith",
