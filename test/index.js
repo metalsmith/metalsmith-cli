@@ -82,7 +82,7 @@ describe('Metalsmith CLI', () => {
         assert(err);
         assert(~err.message.indexOf('error using plugin "./plugin"...'));
         assert(~err.message.indexOf('Break!'));
-        assert(~err.message.indexOf('at module.exports'));
+        assert(~err.message.indexOf('at errorPlugin'));
         done();
       });
     });
