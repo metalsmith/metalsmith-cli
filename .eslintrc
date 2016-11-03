@@ -21,12 +21,3 @@ rules:
   space-before-function-paren:
       - error
       - always
-
-#
-#
-#
-# test/index.js: /* eslint-env mocha */
-#
-# --version should output metalsmith version too
-#
-# Coverage doesn't work with calling a CLI

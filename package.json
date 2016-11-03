@@ -7,20 +7,19 @@
     "_metalsmith": "bin/_metalsmith"
   },
   "scripts": {
-    "prebuild": "npm install --silent --progress=false",
-    "builds": "mkdir -p bin",
     "build": "npm run build:cli",
+    "prebuild:cli": "node src/mkbin",
     "build:cli": "babel src/_metalsmith --out-file bin/_metalsmith",
     "postbuild:cli": "babel src/metalsmith --out-file bin/metalsmith",
-
+    "lint": "eslint --cache --ignore-pattern node_modules --ignore-pattern bin '**/*.js' --ignore-pattern src/mkbin.js 'src/*'",
     "pretest": "npm run build",
-    "test": "mocha --compilers js:babel-register $HARMONY_OPTS",
+    "test": "mocha --compilers js:babel-core/register $HARMONY_OPTS",
     "posttest_should_be_enabled_when_0.12_dropped": "npm run lint",
-    "lint": "eslint --cache --ignore-pattern node_modules --ignore-pattern bin '**/*.js' 'src/*'",
     "precoverage": "npm run build",
-    "coverage": "node $HARMONY_OPTS ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --compilers js:babel-register",
+    "coverage": "node $HARMONY_OPTS ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --compilers js:babel-core/register",
     "precoveralls": "npm run coverage",
     "coveralls": "coveralls < coverage/lcov.info",
+    "prepublish": "npm test",
     "postinstall": "npm run build"
   },
   "repository": {
@@ -35,6 +34,7 @@
   "devDependencies": {
     "assert-dir-equal": "^1.0.1",
     "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.2",
     "babel-preset-env": "0.0.6",
     "coveralls": "^2.11.14",
     "eslint": "^3.9.0",
@@ -43,6 +43,7 @@
     "istanbul": "^0.4.5",
     "metalsmith-drafts": "0.0.1",
     "metalsmith-markdown": "^0.2.1",
+    "mkdirp": "^0.5.1",
     "mocha": "^3.1.2"
   },
   "dependencies": {
