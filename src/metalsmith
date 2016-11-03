@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+// Module dependencies.
+const hasGenerators = require('has-generators');
+const spawn = require('win-fork');
+const resolve = require('path').resolve;
+
+
+// Resolve.
+const args = process.argv.slice(2);
+
+// If we're not talking about a sub-command, fall back on `_metalsmith`.
+args.unshift(resolve(__dirname, '_metalsmith'));
+
+// Add the necessary node flag.
+if (!hasGenerators) {
+  args.unshift('--harmony-generators');
+}
+
+// Spawn.
+const proc = spawn(process.execPath, args, { stdio: 'inherit' });
+
+// Exit.
+proc.on('exit', (code) => {
+  process.exit(code);
+});
